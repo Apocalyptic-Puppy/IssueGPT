@@ -212,6 +212,81 @@ This is a personal learning project. Feedback welcome.
 
 ---
 
+## 📖 Documentation
+
+| Document                                     | Purpose                                  |
+| -------------------------------------------- | ---------------------------------------- |
+| **[GETTING_STARTED.md](GETTING_STARTED.md)** | 👈 **Start here** — 5-minute setup guide |
+| [QUICKSTART.md](QUICKSTART.md)               | Fast setup (experienced developers)      |
+| [SETUP.md](SETUP.md)                         | Detailed step-by-step guide              |
+| [ARCHITECTURE.md](ARCHITECTURE.md)           | System design & data flow diagrams       |
+| [API_EXAMPLES.md](API_EXAMPLES.md)           | API usage & integration examples         |
+| [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) | Project layout & schema design           |
+| [FILE_INDEX.md](FILE_INDEX.md)               | Complete file guide & descriptions       |
+| [CHECKLIST.md](CHECKLIST.md)                 | Implementation status & next steps       |
+| [SUMMARY.md](SUMMARY.md)                     | Project overview & statistics            |
+
+---
+
+## 🏃 Get Started in 5 Minutes
+
+```bash
+# 1. Configure
+cp .env.example .env
+# Edit with your GITHUB_TOKEN and OPENAI_API_KEY
+
+# 2. Start database
+docker-compose up -d
+
+# 3. Run API
+cd IssueGPT.Api
+dotnet restore
+dotnet ef database update
+dotnet run
+
+# 4. Open frontend
+open IssueGPT.Frontend/index.html
+
+# 5. Analyze!
+# Enter: microsoft / vscode / 12345
+# Click Analyze
+# Copy Copilot prompts
+```
+
+👉 [Full Getting Started Guide](GETTING_STARTED.md)
+
+---
+
+## 📊 Project Stats
+
+- **1,117** lines of production C# code
+- **2,129** lines of documentation
+- **26** total files (code + docs)
+- **5** database tables
+- **3** microservices
+- **2** external API integrations
+- **5** Copilot prompt types
+
+---
+
+## 🎯 Use Cases
+
+**For Developers:**
+
+- Analyze GitHub issues faster
+- Get structured insights before coding
+- Generate Copilot prompts automatically
+- Build execution plans instantly
+
+**For Teams:**
+
+- Share issue analysis with team members
+- Build knowledge base of past analyses
+- Standardize issue triage process
+- Accelerate GitHub Copilot effectiveness
+
+---
+
 ## License
 
 MIT
