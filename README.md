@@ -79,13 +79,13 @@ Generate purpose-built prompts for:
 
 ## Tech Stack
 
-| Layer             | Technology                  |
-| ----------------- | --------------------------- |
-| **Backend API**   | ASP.NET Core 8.0            |
-| **Database**      | MSSQL Server 2022           |
-| **External APIs** | GitHub API, OpenAI API      |
-| **Frontend**      | HTML5 / CSS3 / JavaScript   |
-| **Deployment**    | Docker + Kubernetes         |
+| Layer             | Technology                |
+| ----------------- | ------------------------- |
+| **Backend API**   | ASP.NET Core 8.0          |
+| **Database**      | MSSQL Server 2022         |
+| **External APIs** | GitHub API, OpenAI API    |
+| **Frontend**      | HTML5 / CSS3 / JavaScript |
+| **Deployment**    | Docker + Kubernetes       |
 
 ---
 

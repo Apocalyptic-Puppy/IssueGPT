@@ -166,6 +166,126 @@ kubectl port-forward -n issuegpt svc/mssql 1433:1433
 
 ---
 
+## Step 7: 使用 k9s 監控服務
+
+### 安裝 k9s
+
+k9s 是一個 Kubernetes 終端 UI，方便實時監控和管理 Pod、Service、Deployment 等。
+
+**macOS**
+
+```bash
+brew install k9s
+```
+
+**Linux**
+
+```bash
+curl https://github.com/derailed/k9s/releases/download/v0.32.4/k9s_Linux_amd64.tar.gz | tar xz
+sudo mv k9s /usr/local/bin/
+```
+
+### 啟動 k9s
+
+```bash
+# 全局視圖
+k9s
+
+# 只看 issuegpt 命名空間
+k9s -n issuegpt
+```
+
+### k9s 快速導航
+
+| 快捷鍵     | 功能                        |
+| ---------- | --------------------------- |
+| `:po`      | 查看 Pods                   |
+| `:svc`     | 查看 Services               |
+| `:dep`     | 查看 Deployments            |
+| `:sts`     | 查看 StatefulSets           |
+| `:pvc`     | 查看 PersistentVolumeClaims |
+| `:cm`      | 查看 ConfigMaps             |
+| `:secrets` | 查看 Secrets                |
+| `:events`  | 查看事件日誌                |
+| `l`        | 查看 Pod 日誌               |
+| `d`        | 描述資源詳情                |
+| `e`        | 編輯資源                    |
+| `shift+f`  | Port-forward                |
+| `?`        | 幫助菜單                    |
+| `q`        | 退出                        |
+
+### 監控 IssueGPT
+
+```bash
+# 1. 進入 k9s
+k9s -n issuegpt
+
+# 2. 查看所有 Pods
+#    按 `:po` 然後 Enter
+#    應看到：
+#    - mssql-0 (Ready: 1/1)
+#    - issuegpt-api-xxxxx (Ready: 1/1)
+#    - issuegpt-api-xxxxx (Ready: 1/1)
+#    - issuegpt-frontend-xxxxx (Ready: 1/1)
+#    - issuegpt-frontend-xxxxx (Ready: 1/1)
+
+# 3. 查看 Pod 日誌
+#    選中 Pod → 按 `l`
+#    API Pod 應看到：
+#    - "Application started"
+#    - HTTP 請求
+
+# 4. 查看 Deployments
+#    按 `:dep` 然後 Enter
+#    - Ready: 2/2 (表示 2 個副本就緒)
+#    - Up to date: 2
+#    - Available: 2
+
+# 5. 查看 Services 和端口
+#    按 `:svc` 然後 Enter
+#    - issuegpt-frontend (Port: 80)
+#    - issuegpt-api (Port: 80)
+#    - mssql (Headless, Port: 1433)
+```
+
+### 實時監控資源使用
+
+k9s 會顯示每個 Pod 的 CPU 和 Memory 使用情況。預期值：
+
+- **API Pod**: CPU 100-250m (限制 500m), Memory 256-512Mi (限制 1Gi)
+- **Frontend Pod**: CPU 50-100m (限制 250m), Memory 64-128Mi (限制 256Mi)
+- **MSSQL Pod**: CPU 200-400m (限制 1000m), Memory 512-1024Mi (限制 2Gi)
+
+### 故障診斷
+
+```bash
+# Pod 無法啟動？
+# 1. 進入 k9s → 選中 Pod → 按 `d` 查看詳情
+# 2. 查看 Events 欄位，找到具體錯誤
+# 3. 按 `l` 查看 Pod 日誌，了解啟動過程
+
+# 例如常見錯誤：
+# - ImagePullBackOff: Docker 鏡像未構建
+# - CrashLoopBackOff: 應用啟動失敗，查看日誌
+# - Pending: 資源不足，查看 Events
+```
+
+### 進階操作
+
+```bash
+# 編輯運行中的資源
+# 選中資源 → 按 `e` 編輯
+# 修改後保存，Pod 會自動重啟應用配置
+
+# 從 k9s 內部設置 port-forward
+# 選中 Service → 按 `shift+f` → 輸入本地端口
+
+# 查看集群級別事件
+# 按 `:events` 查看最新發生的事件
+```
+
+---
+
 ## 常用命令
 
 ### 檢查狀態

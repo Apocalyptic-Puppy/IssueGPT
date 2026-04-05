@@ -51,6 +51,134 @@ kubectl port-forward -n issuegpt svc/mssql 1433:1433
 
 ---
 
+## 📊 使用 k9s 監控服務
+
+**k9s** 是一個 Kubernetes 終端 UI 工具，可以實時監控和管理集群。
+
+### 安裝 k9s
+
+**macOS**
+
+```bash
+brew install k9s
+```
+
+**Linux**
+
+```bash
+curl https://github.com/derailed/k9s/releases/download/v0.32.4/k9s_Linux_amd64.tar.gz | tar xz
+sudo mv k9s /usr/local/bin/
+```
+
+### 快速開始
+
+```bash
+# 啟動 k9s
+k9s
+
+# 如果指定命名空間
+k9s -n issuegpt
+```
+
+### 常用快捷鍵
+
+| 快捷鍵 | 功能                  |
+| ------ | --------------------- |
+| `:po`  | 查看所有 Pods         |
+| `:svc` | 查看所有 Services     |
+| `:dep` | 查看所有 Deployments  |
+| `:sts` | 查看所有 StatefulSets |
+| `:pvc` | 查看持久化卷聲明      |
+| `d`    | 查看 Pod 日誌         |
+| `e`    | 編輯資源              |
+| `l`    | 查看資源標籤          |
+| `desc` | 查看資源描述          |
+| `?`    | 查看幫助菜單          |
+
+### 監控 IssueGPT 服務
+
+```bash
+# 啟動 k9s 並進入 issuegpt 命名空間
+k9s -n issuegpt
+
+# 在 k9s 中的操作：
+# 1. 查看 Pods
+#    按 `:po` 再按 Enter，查看所有 Pods 狀態
+#    - issuegpt-mssql-0 (MSSQL 服務器)
+#    - issuegpt-api-xxxxx (API Pod #1)
+#    - issuegpt-api-xxxxx (API Pod #2)
+#    - issuegpt-frontend-xxxxx (Frontend Pod #1)
+#    - issuegpt-frontend-xxxxx (Frontend Pod #2)
+
+# 2. 查看 Pod 日誌
+#    選中 Pod，按 `l` 查看日誌
+#    API Pod 日誌應顯示：
+#    - "Application started"
+#    - "Database connection successful"
+#    - HTTP 請求
+
+# 3. 監控 Deployments
+#    按 `:dep` 查看 Deployment 狀態
+#    - Ready: 2/2 (表示 2 個副本都已就緒)
+#    - Up to date: 2
+#    - Available: 2
+
+# 4. 查看 Services
+#    按 `:svc` 查看 Service 暴露的端口
+#    - issuegpt-api: ClusterIP (Port 80 → 5000)
+#    - issuegpt-frontend: ClusterIP (Port 80)
+#    - mssql: Headless Service (Port 1433)
+```
+
+### 實時性能監控
+
+在 k9s 中查看 Pod 資源使用情況：
+
+```bash
+# 啟動 k9s，進入 Pod 列表
+k9s -n issuegpt
+
+# 查看 CPU 和 Memory 使用情況：
+# - API Pod 應使用 100-250m CPU (限制 500m)
+# - Frontend Pod 應使用 50-100m CPU (限制 250m)
+# - MSSQL Pod 應使用 200-400m CPU (限制 1000m)
+```
+
+### 故障診斷
+
+```bash
+# 1. Pod 不就緒？
+#    - 選中 Pod，按 `l` 查看日誌，找到錯誤信息
+#    - 按 `desc` 查看事件日誌，看是否有 ImagePullBackOff 等
+
+# 2. 查看 MSSQL 連接問題
+#    - 選中 mssql-0 Pod，按 `l` 查看啟動日誌
+#    - 應看到 "SQL Server started" 消息
+
+# 3. 查看 API 配置問題
+#    - 選中 API Pod，按 `l` 查看日誌
+#    - 檢查是否有 "Connection string" 或 "OPENAI" 相關錯誤
+```
+
+### 進階使用
+
+```bash
+# 1. 編輯運行中的 ConfigMap
+#    按 `:cm` → 選中 issuegpt → 按 `e` 編輯
+#    （謹慎使用，重新啟動 Pod 後才生效）
+
+# 2. 查看 Events 日誌
+#    按 `:events` 查看集群事件
+#    - Pod scheduling 失敗
+#    - Image pull 問題
+#    - Resource 不足
+
+# 3. Port-forward from k9s
+#    選中 Service，按 `shift+f` 自動設置 port-forward
+```
+
+---
+
 ## 完整步驟
 
 ### 前置設置
