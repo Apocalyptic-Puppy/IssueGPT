@@ -82,10 +82,10 @@ Generate purpose-built prompts for:
 | Layer             | Technology                  |
 | ----------------- | --------------------------- |
 | **Backend API**   | ASP.NET Core 8.0            |
-| **Database**      | MSSQL (Docker on Mac)       |
+| **Database**      | MSSQL Server 2022           |
 | **External APIs** | GitHub API, OpenAI API      |
-| **Frontend**      | Simple Web UI (HTML/CSS/JS) |
-| **Deployment**    | Docker (future: K8s)        |
+| **Frontend**      | HTML5 / CSS3 / JavaScript   |
+| **Deployment**    | Docker + Kubernetes         |
 
 ---
 
@@ -134,37 +134,43 @@ IssueGPT/
 - [ ] Prompt templates & customization
 - [ ] Rich dashboard
 
-### Phase 3 (Scale)
+### Phase 3 (K8s & Scale)
 
+- [x] Kubernetes support (NEW!)
 - [ ] GitHub OAuth integration
 - [ ] Auto-comment analysis to issues
-- [ ] GitHub Actions integration
 - [ ] Semantic search across past analyses
+- [ ] Multi-environment deployments (dev/staging/prod)
 
 ---
 
-## Quick Start (Coming Soon)
+## 📖 Documentation
 
-```bash
-# Clone repo
-git clone <repo-url>
-cd IssueGPT
+| Document                                     | Purpose                                      |
+| -------------------------------------------- | -------------------------------------------- |
+| **[GETTING_STARTED.md](GETTING_STARTED.md)** | 👈 **Start here** — 5-minute Docker setup    |
+| [K8S_QUICK_START.md](K8S_QUICK_START.md)     | **New: Deploy to Kubernetes** on Mac (3 min) |
+| [QUICKSTART.md](QUICKSTART.md)               | Fast setup (experienced developers)          |
+| [SETUP.md](SETUP.md)                         | Detailed Docker step-by-step guide           |
+| [K8S_DEPLOYMENT.md](K8S_DEPLOYMENT.md)       | Complete Kubernetes deployment guide         |
+| [ARCHITECTURE.md](ARCHITECTURE.md)           | System design & data flow diagrams           |
+| [API_EXAMPLES.md](API_EXAMPLES.md)           | API usage & integration examples             |
+| [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) | Project layout & schema design               |
+| [FILE_INDEX.md](FILE_INDEX.md)               | Complete file guide                          |
+| [CHECKLIST.md](CHECKLIST.md)                 | Implementation status                        |
+| [SUMMARY.md](SUMMARY.md)                     | Project overview & statistics                |
 
-# Setup environment
-docker-compose up -d
+---
 
-# Configure API keys
-# Add .env with GITHUB_TOKEN, OPENAI_API_KEY
+## 🚀 Get Started
 
-# Run tests
-dotnet test
+### Option 1: Docker (Traditional)
 
-# Start API
-dotnet run --project IssueGPT.Api
+See [GETTING_STARTED.md](GETTING_STARTED.md) — 5 minutes
 
-# Open UI
-# http://localhost:5000
-```
+### Option 2: Kubernetes (NEW!)
+
+See [K8S_QUICK_START.md](K8S_QUICK_START.md) — 3 minutes + 3 port-forwards
 
 ---
 

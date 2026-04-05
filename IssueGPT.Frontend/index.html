@@ -249,7 +249,26 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:5000/api/issues';
+        // Detect API URL based on environment
+        const getApiUrl = () => {
+            // For local dev: http://localhost:5000
+            // For K8s with port-forward: http://localhost:5000
+            // For K8s with proxy: http://localhost:3000/api/issues
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                const port = window.location.port || '3000';
+                if (port === '3000') {
+                    // Running on frontend container, use proxied API
+                    return '/api/issues';
+                } else {
+                    // Direct port-forward to API
+                    return 'http://localhost:5000/api/issues';
+                }
+            }
+            // Production
+            return '/api/issues';
+        };
+        
+        const API_URL = getApiUrl();
 
         async function analyzeIssue() {
             const owner = document.getElementById('owner').value;
@@ -270,7 +289,9 @@
                 const response = await fetch(`${API_URL}/analyze`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ owner, repo, issueNumber })
+                    body: JSON.stringify({ owner, repo, issueNumber }),
+                    mode: 'cors',
+                    credentials: 'include'
                 });
 
                 if (!response.ok) {

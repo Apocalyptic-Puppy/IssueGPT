@@ -1,0 +1,140 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: issuegpt-api
+  namespace: issuegpt
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: issuegpt-api
+  namespace: issuegpt
+  labels:
+    app: issuegpt-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: issuegpt-api
+  template:
+    metadata:
+      labels:
+        app: issuegpt-api
+    spec:
+      serviceAccountName: issuegpt-api
+      containers:
+      - name: api
+        image: issuegpt-api:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+          name: http
+          protocol: TCP
+        env:
+        - name: ASPNETCORE_URLS
+          value: "http://+:5000"
+        - name: ASPNETCORE_ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: issuegpt-config
+              key: ASPNETCORE_ENVIRONMENT
+        - name: DB_SERVER
+          valueFrom:
+            configMapKeyRef:
+              name: issuegpt-config
+              key: DB_SERVER
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: issuegpt-config
+              key: DB_PORT
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: issuegpt-config
+              key: DB_NAME
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: issuegpt-config
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: issuegpt-secrets
+              key: DB_PASSWORD
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: issuegpt-secrets
+              key: GITHUB_TOKEN
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: issuegpt-secrets
+              key: OPENAI_API_KEY
+        - name: OPENAI_MODEL
+          valueFrom:
+            configMapKeyRef:
+              name: issuegpt-config
+              key: OPENAI_MODEL
+        - name: GITHUB_API_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: issuegpt-config
+              key: GITHUB_API_BASE_URL
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /swagger
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /swagger
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 2
+        securityContext:
+          runAsNonRoot: false
+          allowPrivilegeEscalation: false
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - issuegpt-api
+              topologyKey: kubernetes.io/hostname
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: issuegpt-api
+  namespace: issuegpt
+  labels:
+    app: issuegpt-api
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 5000
+    protocol: TCP
+    name: http
+  selector:
+    app: issuegpt-api
